@@ -1,0 +1,23 @@
+{
+  "name": "advent-of-code",
+  "version": "1.0.0",
+  "description": "Advent of Code",
+  "main": "index.js",
+  "scripts": {
+    "2019": "mocha --require babel-polyfill --require babel-register -f 2020 -R min --watch",
+    "test": "mocha --require babel-polyfill --require babel-register"
+  },
+  "author": "vegar",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "chai": "^4.1.2",
+    "eslint": "^6.7.2",
+    "mocha": "^6.2.2"
+  },
+  "dependencies": {
+    "terminal-kit": "^1.32.1"
+  }
+}
