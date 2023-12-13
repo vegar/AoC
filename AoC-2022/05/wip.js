@@ -1,19 +1,15 @@
 const input = require("fs")
   .readFileSync(require("path").join(__dirname, "input.txt"), "utf8")
-  .trim()
   .split(/\r?\n/);
 
-const stacks = [
-  ["R", "G", "J", "B", "T", "V", "Z"],
-  ["J", "R", "V", "L"],
-  ["S", "Q", "F"],
-  ["Z", "H", "N", "L", "F", "V", "Q", "G"],
-  ["R", "Q", "T", "J", "C", "S", "M", "W"],
-  ["S", "W", "T", "C", "H", "F"],
-  ["D", "Z", "C", "V", "F", "N", "J"],
-  ["L", "G", "Z", "D", "W", "R", "F", "Q"],
-  ["J", "B", "W", "V", "P"],
-];
+const stacks = [];
+
+function* chunk(input, size) {
+  for (var i = 0; ; i += size) {
+    if (i > input.length) return;
+    yield [i / size, input.substring(i, i + size)];
+  }
+}
 
 for (let i = 0; i < input.length; i++) {
   const a = input[i].match(/move (\d*) from (\d*) to (\d*)/);
@@ -24,6 +20,14 @@ for (let i = 0; i < input.length; i++) {
       count
     );
     stacks[to - 1].push(...crates);
+  } else if (input[i].length > 0) {
+    for (let [idx, c] of chunk(input[i], 4)) {
+      if (c.trim()) {
+        stacks[idx] = stacks[idx] ?? [];
+        const m = c.match(/[A-Z]+/);
+        if (m) stacks[idx].splice(0, 0, m[0]);
+      }
+    }
   }
 }
 
