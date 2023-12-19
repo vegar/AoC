@@ -30,30 +30,57 @@ let [workflows, parts] = input.split("\n\n").map((i, idx) => {
       )
     );
 });
-
-console.log(parts);
-
-const doCheck = (part, check) => {
-  return check.operator == ">"
-    ? part[check.prop] > check.value
-    : part[check.prop] < check.value;
-};
-
 workflows = new Map(workflows);
-const checkPart = (part, workflow) => {
-  let { next } = workflow.find((c) => !c.prop || doCheck(part, c));
-  if (next == "A") return true;
-  if (next == "R") return false;
-  return checkPart(part, workflows.get(next));
-};
 
-checkPart(parts[0], workflows.get("in"));
+const count = (ranges, workflow) => {
+  console.group(`${workflow} - ${Object.entries(ranges)}`)
+  try {
+    if (workflow == "R") return 0;
+    if (workflow == "A") return Object.values(ranges).reduce((acc, curr) => acc * (curr[1] - curr[0] + 1), 1);
 
-let result = parts.reduce((acc, part, idx) => {
-  console.log(` checking part ${idx}`);
-  if (checkPart(part, workflows.get("in"))) {
-    return acc + part.x + part.m + part.a + part.s;
+    let rules = workflows.get(workflow);
+    let fallback = rules.pop();
+
+    let sum = 0;
+    let doFallback = 0;
+    let newRanges = { ...ranges };
+    for (let rule of rules) {
+      let [start, end] = newRanges[rule.prop];
+      let accepted;
+      let rejected;
+      if (rule.operator == '<') {
+        accepted = [start, rule.value - 1];
+        rejected = [rule.value, end];
+      } else {
+        accepted = [rule.value + 1, end];
+        rejected = [start, rule.value];
+      }
+      if (accepted[0] <= accepted[1]) {
+        sum += count({ ...newRanges, [rule.prop]: accepted }, rule.next);
+      }
+      if (rejected[0] <= rejected[1]) {
+        console.log(`modify range for next rule`)
+        console.log(`  old: ${Object.entries(newRanges)}`)
+        newRanges = { ...newRanges, [rule.prop]: rejected }
+        console.log(`  new: ${Object.entries(newRanges)}`)
+      } else {
+        break;
+      }
+      doFallback++
+    }
+    if (doFallback == rules.length) {
+      console.log(`Fallback, ${fallback.next} for ${Object.entries(newRanges)}`)
+      sum += count(newRanges, fallback.next)
+
+    }
+
+    return sum;
+  } finally {
+    console.groupEnd();
   }
-  return acc;
-}, 0);
+}
+
+const start = { x: [1, 4000], m: [1, 4000], a: [1, 4000], s: [1, 4000] };
+
+let result = count(start, "in");
 console.log({ result });
