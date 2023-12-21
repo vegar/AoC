@@ -13,6 +13,8 @@ const lines = input.split("\n").map((line) => {
   };
 });
 
+// ref. https://www.youtube.com/watch?v=g3Ms5e7Jdqo
+
 const cache = new Map();
 const match = (springs, records) => {
   if (springs == "") return records.length ? 0 : 1;
