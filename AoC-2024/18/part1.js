@@ -102,37 +102,6 @@ const search = () => {
   return -1;
 };
 
-function a_star(graph, start, end) {
-  const open = new PriorityQueue();
-  open.enqueue(start);
-  const cameFrom = { start: null };
-  const costSoFar = { start: 0 };
-
-  while (!open.isEmpty()) {
-    let current = open.get();
-    if (current == end) break;
-
-    try {
-      graph.get(current).edges.forEach((next) => {
-        let newCost = (costSoFar[current] ?? 0) + graph.get(next).cost;
-        if (!costSoFar[next] || newCost < costSoFar[next]) {
-          costSoFar[next] = newCost;
-          let priority = newCost + (graph.get(end).x - graph.get(next).x);
-          open.enqueue(next, priority);
-          cameFrom[next] = current;
-        }
-      });
-    } catch (error) {
-      console.error(`Error ${error} - current: ${current}`);
-    }
-  }
-
-  return {
-    cameFrom,
-    costSoFar,
-  };
-}
-
 let result = search();
 
 // 1199 too high
