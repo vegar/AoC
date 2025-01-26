@@ -1,5 +1,5 @@
 const input = require("fs")
-  .readFileSync(require("path").join(__dirname, "input.txt"), "utf8")
+  .readFileSync(require("path").join(__dirname, "..\\23\\input.txt"), "utf8")
   .trim()
   .split("\n")
   .map((line) => {
@@ -27,9 +27,10 @@ const instructions = {
   },
 };
 let idx = 0;
-let registers = { a: 0, b: 0, c: 1, d: 0 };
+let registers = { a: 7, b: 0, c: 0, d: 0 };
 while (idx < input.length) {
   let [cmd, params] = input[idx];
+  console.log(cmd, params, JSON.stringify(registers));
   idx += instructions[cmd](params, registers);
 }
 

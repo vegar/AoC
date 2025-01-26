@@ -1,0 +1,61 @@
+const input = require("fs")
+  .readFileSync(require("path").join(__dirname, "input.txt"), "utf8")
+  .trim()
+  .split("\n")
+  .slice(2)
+  .map((line) => {
+    let [name, size, used, avail, use] = line.split(/\s+/);
+
+    let [_, x, y] = name.match(/-x(\d+)-y(\d+)/);
+
+    return {
+      name,
+      size: parseInt(size),
+      used: parseInt(used),
+      avail: parseInt(avail),
+      use: parseInt(use),
+      x: parseInt(x),
+      y: parseInt(y),
+    };
+  });
+
+const highX = input.reduce((m, c) => (c.x > m ? c.x : m), 0);
+const highY = input.reduce((m, c) => (c.y > m ? c.y : m), 0);
+const empty = input.find((n) => n.use == 0);
+console.log({ highX, highY, empty });
+
+let map = Array(highY + 1)
+  .fill("")
+  .map((_) => Array(highX).fill("."));
+
+for (let { used, x, y } of input) {
+  map[y][x] =
+    used == 0
+      ? "_"
+      : used > 100
+      ? "#"
+      : x == 0 && y == 0
+      ? "!"
+      : x == highX && y == 0
+      ? "G"
+      : ".";
+}
+
+map.forEach((row) => console.log(row.join("")));
+
+// Solved 'on paper'.
+//
+// 72 steps to move empty space up infront of wanted data
+// 5 steps to move wanted data one step to the left
+//
+//   0      1      2     3     4     5
+//  .-G  → .G_  → .G. → .G. → .G. → -G.
+//  ...    ...    ..-   .-.   -..   ...
+//
+//  36 step to the left => 180 steps.
+// 180 + 72 = 252.
+
+let result = 252;
+console.log({ result });
+
+//981 to low
